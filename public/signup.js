@@ -1,4 +1,4 @@
-const form = document.getElementById("signup_form");
+const signup_form = document.getElementById("signup_form");
 
 const sigUp = async (e) => {
   e.preventDefault();
@@ -14,14 +14,15 @@ const sigUp = async (e) => {
     };
     // console.log(obj);
 
-    const response = await axios.post("http://localhost:4000/user/sigup", obj);
+    const response = await axios.post("http://localhost:4001/user/signup", obj);
     // console.log(response);
-    if (response.status === 207) {
+    if (response.status === 401) {
       const view = document.querySelector(".error_view");
       view.style.color = "red";
       view.innerHTML = response.data.message;
     } else {
       document.querySelector(".error_view").innerHTML = response.data.message;
+      window.location('/user')
     }
   } catch (error) {
     document.querySelector(".error_view").innerHTML =
@@ -29,4 +30,4 @@ const sigUp = async (e) => {
   }
 };
 
-form.addEventListener("submit", sigUp);
+signup_form.addEventListener("submit", sigUp);

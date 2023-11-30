@@ -2,10 +2,14 @@ const express = require('express');
 
 const router = express.Router();
 
-const sigupForm = require('../controller/user');
+const userActions = require('../controller/user');
 
-router.get('/user',sigupForm.usersForm);
+router.get('/',userActions.usersLoginForm);
 
-router.post('/user/sigup',sigupForm.postSignUp);
+router.post('/signup',userActions.postSignUp);
+
+router.get('/signup',userActions.usersSignUpForm);
+
+router.post('/login',userActions.postLogIn);
 
 module.exports = router;

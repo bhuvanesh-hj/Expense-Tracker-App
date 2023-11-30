@@ -1,8 +1,47 @@
 const Users = require("../models/user");
 
-exports.usersForm = (req, res, next) => {
+exports.usersSignUpForm = (req, res, next) => {
   try {
-    res.sendFile("index.html", { root: "views" });
+    res.sendFile("signup.html", { root: "views" });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+exports.usersLoginForm = (req, res, next) => {
+  try {
+    res.sendFile("login.html", { root: "views" });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+exports.postLogIn = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    // console.log(email,password);
+
+    const [existUserEmail] = await Users.findAll({
+      where: { email: req.body.email },
+    });
+
+    const [existUserPassword] = await Users.findAll({
+      where: { password: req.body.password },
+    });
+
+    // console.log(existUserEmail,existUserPassword);
+
+    if(existUserEmail){
+      if(existUserPassword){
+        res.status(200).json({message:"User sign-in successful..."})
+      }else{
+        res.status(401).json({error:"User Password Incorrect..."});
+      }
+    }else{
+      res.status(401).json({error:"User not exist"});
+    }
   } catch (error) {
     res.status(500).json({ error: error });
   }
@@ -19,7 +58,7 @@ exports.postSignUp = async (req, res, next) => {
     });
     // console.log(existEmail);
     if (existEmail.length > 0) {
-      res.status(207).json({ message: "User exist" });
+      res.status(401).json({ message: "User exist" });
     } else {
       const response = await Users.create({
         username,
