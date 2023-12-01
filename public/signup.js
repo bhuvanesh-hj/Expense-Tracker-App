@@ -16,7 +16,7 @@ const sigUp = async (e) => {
 
     const response = await axios.post("http://localhost:4001/user/signup", obj);
     // console.log(response);
-    if (response.status === 401) {
+    if (response.status >= 401) {
       const view = document.querySelector(".error_view");
       view.style.color = "red";
       view.innerHTML = response.data.message;
