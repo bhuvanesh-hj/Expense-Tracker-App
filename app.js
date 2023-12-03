@@ -5,12 +5,14 @@ const port = 4001;
 const bodyParser = require("body-parser");
 
 const userRoutes = require("./routes/user");
+const expenseRoutes = require("./routes/expense");
 
 const sequelize = require("./utils/database");
 
 const cors = require("cors");
 
 const Users = require("./models/user");
+const Expense = require("./models/expense");
 
 const app = express();
 
@@ -23,6 +25,11 @@ app.use(cors());
 app.use(express.static("public"));
 
 app.use("/user",userRoutes);
+app.use("/expense",expenseRoutes);
+
+Users.hasMany(Expense);
+Expense.belongsTo(Users);
+
 
 sequelize
   .sync({ force: false })
