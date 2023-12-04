@@ -1,10 +1,13 @@
 const expense_form = document.querySelector("#expense-form");
 const error_view = document.querySelector("#error-view");
 const Expense_list = document.querySelector(".list");
+const token = localStorage.getItem("token");
 
 window.addEventListener("DOMContentLoaded", () => {
   axios
-    .get("http://localhost:4001/expense/getExpense")
+    .get("http://localhost:4001/expense/getExpense", {
+      headers: { Authentication: token },
+    })
     .then((res) => {
       res.data.response.forEach((expense) => {
         addExpenseToList(expense);
@@ -29,7 +32,9 @@ function addExpenseToList(expense) {
 function deleteExpense(id) {
   //   console.log(id);
   axios
-    .delete(`http://localhost:4001/expense/deleteExpense/${id}`)
+    .delete(`http://localhost:4001/expense/deleteExpense/${id}`, {
+      headers: { Authentication: token },
+    })
     .then((res) => {
       error_view.textContent = res.data.message;
       removeList(id);
@@ -59,7 +64,9 @@ const expenseHandler = (e) => {
   };
 
   axios
-    .post("http://localhost:4001/expense/addExpense", obj)
+    .post("http://localhost:4001/expense/addExpense", obj, {
+      headers: { Authentication: token },
+    })
     .then((res) => {
       error_view.textContent = res.data.message;
       addExpenseToList(res.data.response);

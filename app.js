@@ -3,6 +3,7 @@ const express = require("express");
 const port = 4001;
 
 const bodyParser = require("body-parser");
+require('dotenv').config();
 
 const userRoutes = require("./routes/user");
 const expenseRoutes = require("./routes/expense");

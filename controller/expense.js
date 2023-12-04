@@ -3,7 +3,7 @@ const Expense = require("../models/expense");
 exports.postExpense = async (req, res, next) => {
   try {
     const { amount, description, category } = req.body;
-
+    const userId = req.user.id;
     if (
       amount == undefined ||
       description == undefined ||
@@ -16,9 +16,12 @@ exports.postExpense = async (req, res, next) => {
       amount,
       description,
       category,
+      userId,
     });
 
-    res.status(200).json({ message:"Succesfully added the expense.",response });
+    res
+      .status(200)
+      .json({ message: "Successfully added the expense.", response });
   } catch (error) {
     res.status(error.status || 500).json({
       message: error.message || "Something went wrong while adding expense..",
@@ -28,7 +31,7 @@ exports.postExpense = async (req, res, next) => {
 
 exports.getExpense = async (req, res, next) => {
   try {
-    const response = await Expense.findAll();
+    const response = await Expense.findAll({ where: { userId: req.user.id } });
 
     res.status(200).json({ response, success: true });
   } catch (error) {

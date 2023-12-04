@@ -8,8 +8,6 @@ router.get('/',userActions.usersLoginForm);
 
 router.post('/signup',userActions.postSignUp);
 
-router.get('/signup',userActions.usersSignUpForm);
-
 router.post('/login',userActions.postLogIn);
 
 module.exports = router;

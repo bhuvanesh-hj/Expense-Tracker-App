@@ -1,20 +1,18 @@
 const Users = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-exports.usersSignUpForm = (req, res, next) => {
+
+exports.usersLoginForm = (req, res, next) => {
   try {
-    res.sendFile("signup.html", { root: "views" });
+    res.sendFile("userActions.html", { root: "views" });
   } catch (error) {
     res.status(500).json({ error: error });
   }
 };
 
-exports.usersLoginForm = (req, res, next) => {
-  try {
-    res.sendFile("login.html", { root: "views" });
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
+const generateAccessToken = (id) => {
+  return jwt.sign({ userId: id }, process.env.SECRET_KEY);
 };
 
 exports.postLogIn = async (req, res, next) => {
@@ -22,6 +20,10 @@ exports.postLogIn = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     // console.log(email,password);
+
+    if (email == "" || password == "") {
+      res.status(405).json({ error: "Please fill the form details" });
+    }
 
     const [existUserEmail] = await Users.findAll({
       where: { email },
@@ -34,7 +36,10 @@ exports.postLogIn = async (req, res, next) => {
           throw new Error("Something went wrong!");
         }
         if (result) {
-          res.status(200).json({ message: "User sign-in successful✅" });
+          res.status(200).json({
+            message: "User sign-in successful✅",
+            token: generateAccessToken(existUserEmail.id),
+          });
         } else {
           res.status(401).json({ error: "User not authorized!" });
         }
@@ -64,7 +69,7 @@ exports.postSignUp = async (req, res, next) => {
       bcrypt.hash(userPassword, saltRounds, async function (err, password) {
         // Store hash in your password DB.
         if (err) throw new Error("Something went wrong!");
-        
+
         const response = await Users.create({
           username,
           email,
