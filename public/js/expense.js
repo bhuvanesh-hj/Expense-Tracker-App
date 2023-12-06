@@ -1,15 +1,90 @@
 const expense_form = document.querySelector("#expense-form");
 const error_view = document.querySelector("#error-view");
 const Expense_list = document.querySelector(".list");
+const list_body = document.querySelector("#list-body");
 const token = localStorage.getItem("token");
 
-window.addEventListener("DOMContentLoaded", () => {
+
+function showPremiumMessage() {
+  document.getElementById("premium-btn").style.display = "none";
+  document.querySelector(".member").innerHTML = "You are a premium member😊";
+  document.querySelector(".member").style.color = "gold";
+}
+
+function showLeaderBoard() {
+  const lbBtn = document.createElement("button");
+  lbBtn.className = "btn btn-outline-dark";
+  lbBtn.innerHTML = `Show Leader Board <i class='fas fa-chess-king' style='font-size:24px;color: gold;'></i>`;
+  document.querySelector(".member").appendChild(lbBtn);
+  lbBtn.onclick = async () => {
+    try {
+      const response = await axios(
+        "http://localhost:4001/premium/leaderBoard",
+        {
+          headers: { Authentication: token },
+        }
+      );
+      console.log(response);
+      list_body.innerHTML = "";
+      list_body.innerHTML += `<div id="leader-table" ><table  class="table table-striped table-hover border">
+      <h3>Leader Board</h3>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Total Expenses</th>
+        </tr>
+      </thead>
+      <tbody class="leader-list">
+      </tbody>
+    </table> </div>`;
+
+      response.data.expensesList.map((leader) => {
+        document.querySelector(".leader-list").innerHTML += `<tr>
+        <td>${leader.username}</td>
+        <td>${leader.total_amount || 0}</td>
+      </tr>`;
+      });
+
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+// function jwtParser(token) {
+//   const base64Url = token.split(".")[1];
+//   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+//   const jsonPayload = decodeURIComponent(
+//     window
+//       .atob(base64)
+//       .split("")
+//       .map((x) => "%" + ("00" + x.charCodeAt(0).toString(16)).slice(-2))
+//       .join("")
+//   );
+
+//   return JSON.parse(jsonPayload);
+// }
+
+window.addEventListener("DOMContentLoaded", (e) => {
+  // const token = localStorage.getItem("token");
+  // const decodedJwt = jwtParser(token);
+
+  // console.log(decodedJwt);
+  // if (decodedJwt.isPremiumMember) {
+  //   showPremiumMessage();
+  // }
+e.preventDefault();
   axios
     .get("http://localhost:4001/expense/getExpense", {
       headers: { Authentication: token },
     })
     .then((res) => {
-      res.data.response.forEach((expense) => {
+      if (res.data.user) {
+        showPremiumMessage();
+        showLeaderBoard();
+      }
+      res.data.expense.forEach((expense) => {
         addExpenseToList(expense);
       });
     })
@@ -106,12 +181,10 @@ document.getElementById("premium-btn").onclick = async (e) => {
       );
 
       console.log(res);
-
+      showPremiumMessage();
+      showLeaderBoard();
+      // localStorage.setItem("token", res.data.token);
       alert("you are a premium user now😊💥💥 ");
-      document.getElementById("premium-btn").style.display = "none";
-      document.querySelector(".member").innerHTML =
-        "You are a premium member😊";
-      document.querySelector(".member").style.color = "gold";
     },
   };
 

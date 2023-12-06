@@ -1,5 +1,13 @@
 const Order = require("../models/order.model");
 const Razorpay = require("razorpay");
+const jwt = require("jsonwebtoken");
+
+const generateAccessToken = (id, isPremiumMember) => {
+  return jwt.sign(
+    { userId: id, isPremiumMember: isPremiumMember },
+    process.env.SECRET_KEY
+  );
+};
 
 exports.purchasePremium = (req, res, next) => {
   try {
@@ -37,49 +45,57 @@ exports.updateTransactionStatus = async (req, res, next) => {
 
     if (!payment_id) {
       order.update({ status: "FAILED" }).then(() => {
-        return res.status(203).json({ success: true, message: "Transaction failed!" });
-      });
-    }else {
-    const Promise1 = order.update({
-      paymentid: payment_id,
-      status: "SUCCESSFUL",
-    });
-
-    const Promise2 = req.user.update({ isPremiumMember: true });
-
-    Promise.all([Promise1, Promise2])
-      .then(() => {
         return res
-          .status(202)
-          .json({ success: true, message: "Transaction successful" });
-      })
-      .catch((err) => {
-        throw new Error(err);
+          .status(203)
+          .json({ success: true, message: "Transaction failed!" });
+      });
+    } else {
+      const Promise1 = order.update({
+        paymentid: payment_id,
+        status: "SUCCESSFUL",
       });
 
-    // Order.findOne({ where: { orderid: order_id } })
-    //   .then((order) => {
-    //     order
-    //       .update({ paymentid: payment_id, status: "SUCCESSFUL" })
-    //       .then(() => {
-    //         req.user
-    //           .update({ isPremiumMember: true })
-    //           .then(() => {
-    //             return res
-    //               .status(202)
-    //               .json({ success: true, message: "Transaction successful" });
-    //           })
-    //           .catch((err) => {
-    //             throw new Error(err);
-    //           });
-    //       })
-    //       .catch((err) => {
-    //         throw new Error(err);
-    //       });
-    //   })
-    //   .catch((err) => {
-    //     throw new Error(err);
-    //   });
+      const Promise2 = req.user.update({ isPremiumMember: true });
+
+      const userId = req.user.id;
+
+      Promise.all([Promise1, Promise2])
+        .then(() => {
+          return res
+            .status(202)
+            .json({
+              success: true,
+              message: "Transaction successful",
+              token: generateAccessToken(userId, true),
+            });
+        })
+        .catch((err) => {
+          throw new Error(err);
+        });
+
+      // Order.findOne({ where: { orderid: order_id } })
+      //   .then((order) => {
+      //     order
+      //       .update({ paymentid: payment_id, status: "SUCCESSFUL" })
+      //       .then(() => {
+      //         req.user
+      //           .update({ isPremiumMember: true })
+      //           .then(() => {
+      //             return res
+      //               .status(202)
+      //               .json({ success: true, message: "Transaction successful" });
+      //           })
+      //           .catch((err) => {
+      //             throw new Error(err);
+      //           });
+      //       })
+      //       .catch((err) => {
+      //         throw new Error(err);
+      //       });
+      //   })
+      //   .catch((err) => {
+      //     throw new Error(err);
+      //   });
     }
   } catch (error) {
     console.log(error);

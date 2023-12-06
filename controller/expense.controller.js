@@ -1,4 +1,5 @@
 const Expense = require("../models/expense.model");
+const User = require("../models/user.model");
 
 exports.postExpense = async (req, res, next) => {
   try {
@@ -32,8 +33,11 @@ exports.postExpense = async (req, res, next) => {
 exports.getExpense = async (req, res, next) => {
   try {
     const response = await Expense.findAll({ where: { userId: req.user.id } });
+    const userResponse = await User.findOne({ where: { id: req.user.id } });
 
-    res.status(200).json({ response, success: true });
+    res
+      .status(200)
+      .json({ expense: response, user: userResponse.isPremiumMember, success: true });
   } catch (error) {
     res.status(500).json({ error: error, success: false });
   }

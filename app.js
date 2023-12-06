@@ -8,6 +8,7 @@ require("dotenv").config();
 const userRoutes = require("./routes/user");
 const expenseRoutes = require("./routes/expense");
 const purchaseRoues = require("./routes/purchase");
+const premiumRoutes = require("./routes/premium");
 
 const sequelize = require("./utils/database");
 
@@ -30,6 +31,7 @@ app.use(express.static("public"));
 app.use("/user", userRoutes);
 app.use("/expense", expenseRoutes);
 app.use("/purchase", purchaseRoues);
+app.use("/premium", premiumRoutes);
 
 Users.hasMany(Expense);
 Expense.belongsTo(Users);
