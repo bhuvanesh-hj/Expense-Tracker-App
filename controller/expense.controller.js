@@ -20,6 +20,12 @@ exports.postExpense = async (req, res, next) => {
       userId,
     });
 
+    const totalExpenses = +req.user.totalExpenses + +amount;
+
+    console.log(totalExpenses);
+
+    await User.update({ totalExpenses: totalExpenses }, { where: { id: req.user.id } });
+
     res
       .status(200)
       .json({ message: "Successfully added the expense.", response });
@@ -37,7 +43,11 @@ exports.getExpense = async (req, res, next) => {
 
     res
       .status(200)
-      .json({ expense: response, user: userResponse.isPremiumMember, success: true });
+      .json({
+        expense: response,
+        user: userResponse.isPremiumMember,
+        success: true,
+      });
   } catch (error) {
     res.status(500).json({ error: error, success: false });
   }

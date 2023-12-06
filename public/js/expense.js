@@ -41,7 +41,7 @@ function showLeaderBoard() {
       response.data.expensesList.map((leader) => {
         document.querySelector(".leader-list").innerHTML += `<tr>
         <td>${leader.username}</td>
-        <td>${leader.total_amount || 0}</td>
+        <td>${leader.totalExpenses || 0}</td>
       </tr>`;
       });
 
