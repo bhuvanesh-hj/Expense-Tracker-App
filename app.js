@@ -28,7 +28,7 @@ app.use(cors());
 
 app.use(express.static("public"));
 
-app.use("/user", userRoutes);
+app.use("/", userRoutes);
 app.use("/expense", expenseRoutes);
 app.use("/purchase", purchaseRoues);
 app.use("/premium", premiumRoutes);

@@ -30,7 +30,7 @@ signup_form.addEventListener("submit", async (e) => {
       password,
     };
 
-    const response = await axios.post("http://localhost:4001/user/signup", obj);
+    const response = await axios.post("http://localhost:4001/signup", obj);
     if (response.status >= 400) {
       const view = document.querySelector(".error-view-sign-up");
       view.style.color = "red";
@@ -66,7 +66,7 @@ login_form.addEventListener("submit", async (e) => {
       password,
     };
 
-    const response = await axios.post("http://localhost:4001/user/login", obj);
+    const response = await axios.post("http://localhost:4001/login", obj);
 
     if (response.status === 200) {
       // alert("user successfully sign in");
