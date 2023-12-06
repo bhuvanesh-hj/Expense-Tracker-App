@@ -21,6 +21,7 @@ const Users = sequelize.define("users", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  isPremiumMember: Sequelize.BOOLEAN,
 });
 
 module.exports = Users;

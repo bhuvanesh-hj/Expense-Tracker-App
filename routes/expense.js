@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const expenseController = require("../controller/expense");
+const expenseController = require("../controller/expense.controller");
 const authentication = require("../middleware/authentication");
 
 router.get("/", (req, res) => {

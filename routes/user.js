@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const userActions = require('../controller/user');
+const userActions = require('../controller/user.controller');
 
 router.get('/',userActions.usersLoginForm);
 

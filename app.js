@@ -3,17 +3,19 @@ const express = require("express");
 const port = 4001;
 
 const bodyParser = require("body-parser");
-require('dotenv').config();
+require("dotenv").config();
 
 const userRoutes = require("./routes/user");
 const expenseRoutes = require("./routes/expense");
+const purchaseRoues = require("./routes/purchase");
 
 const sequelize = require("./utils/database");
 
 const cors = require("cors");
 
-const Users = require("./models/user");
-const Expense = require("./models/expense");
+const Users = require("./models/user.model");
+const Expense = require("./models/expense.model");
+const Order = require("./models/order.model");
 
 const app = express();
 
@@ -25,12 +27,15 @@ app.use(cors());
 
 app.use(express.static("public"));
 
-app.use("/user",userRoutes);
-app.use("/expense",expenseRoutes);
+app.use("/user", userRoutes);
+app.use("/expense", expenseRoutes);
+app.use("/purchase", purchaseRoues);
 
 Users.hasMany(Expense);
 Expense.belongsTo(Users);
 
+Users.hasMany(Order);
+Order.belongsTo(Users);
 
 sequelize
   .sync({ force: false })
