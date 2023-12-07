@@ -1,8 +1,13 @@
 const { Sequelize } = require("sequelize");
 
-const sequelize = new Sequelize("expense", "root", "Bhuvi112233@", {
-  dialect: "mysql",
-  host: "localhost",
-});
+const sequelize = new Sequelize(
+  "expense",
+  "root",
+  process.env.DATABASE_PASSWORD,
+  {
+    dialect: "mysql",
+    host: process.env.HOST,
+  }
+);
 
 module.exports = sequelize;
