@@ -3,12 +3,22 @@ const error_view = document.querySelector("#error-view");
 const Expense_list = document.querySelector(".list");
 const list_body = document.querySelector("#list-body");
 const token = localStorage.getItem("token");
+var limit = JSON.parse(localStorage.getItem("limit"));
+document.querySelector("#limit").value = limit;
+
+document.querySelector("#limit").onclick = (e) => {
+  limit = document.querySelector("#limit").value;
+  // console.log(limit);
+  localStorage.setItem("limit", JSON.stringify(limit));
+  expenses(e);
+};
 
 function showPremiumMessage() {
   document.getElementById("premium-btn").style.display = "none";
 }
 
 function showReportsTab() {
+  document.querySelector(".reports").innerHTML = "";
   const reports = document.createElement("a");
   reports.className = "nav-link";
   reports.style.cursor = "pointer";
@@ -18,6 +28,7 @@ function showReportsTab() {
 }
 
 function showLeaderBoard() {
+  document.querySelector(".leader-Board").innerHTML = "";
   const anchorTag = document.createElement("a");
   anchorTag.className = "nav-link";
   anchorTag.style.cursor = "pointer";
@@ -39,8 +50,7 @@ function showLeaderBoard() {
 
 //   return JSON.parse(jsonPayload);
 // }
-
-window.addEventListener("DOMContentLoaded", (e) => {
+function expenses(e) {
   // const token = localStorage.getItem("token");
   // const decodedJwt = jwtParser(token);
 
@@ -50,7 +60,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
   // }
   e.preventDefault();
   axios
-    .get("http://localhost:4001/expense/getExpenses/1", {
+    .get(`http://localhost:4001/expense/getExpenses?page=${1}&limit=${limit}`, {
       headers: { Authentication: token },
     })
     .then((res) => {
@@ -59,11 +69,13 @@ window.addEventListener("DOMContentLoaded", (e) => {
         showLeaderBoard();
         showReportsTab();
       }
+      Expense_list.innerHTML = "";
       res.data.expenses.forEach((expense) => {
         addExpenseToList(expense);
       });
 
       const ul = document.querySelector("#pagination-list");
+      ul.innerHTML = "";
 
       for (let i = 1; i <= res.data.totalPages; i++) {
         ul.innerHTML += `<li class="page-item">
@@ -74,12 +86,14 @@ window.addEventListener("DOMContentLoaded", (e) => {
     .catch((err) => {
       error_view.textContent = err.message;
     });
-});
+}
+
+window.addEventListener("DOMContentLoaded", expenses);
 
 async function pagination(e) {
   try {
     const response = await axios(
-      `http://localhost:4001/expense/getExpenses/${e}`,
+      `http://localhost:4001/expense/getExpenses?page=${e}&limit=${limit}`,
       {
         headers: {
           Authentication: token,
@@ -98,6 +112,7 @@ async function pagination(e) {
 }
 
 function addExpenseToList(expense) {
+  // Expense_list.innerHTML = "";
   const childElement = document.createElement("tr");
   //   childElement.innerHTML = `Amount : ${expense.amount} Description : ${expense.description} Category : ${expense.category} <button>Delete</button>`;
 

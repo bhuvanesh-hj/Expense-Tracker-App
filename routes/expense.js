@@ -20,13 +20,7 @@ router.get("/leaderBoard", (req, res) => {
 });
 
 router.get(
-  "/getExpense",
-  authentication.authenticate,
-  expenseController.getExpense
-);
-
-router.get(
-  "/getExpenses/:page",
+  "/getExpenses",
   authentication.authenticate,
   expenseController.getExpensesForPagination
 );

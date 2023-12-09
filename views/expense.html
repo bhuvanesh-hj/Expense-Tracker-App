@@ -131,7 +131,18 @@
       <!-- <ul class="list"></ul> -->
       <div id="expense-table" class="text-center table-responsive">
         <table class="table table-sm table-striped table-hover border">
-          <h3>Expense List</h3>
+          <div class="text-center d-flex justify-content-evenly">
+            <h3>Expense List</h3>
+            <div>
+            <select name="limit" id="limit" class="form-select">
+              <option value="4">4</option>
+              <option value="7">7</option>
+              <option value="10">10</option>
+              <option value="13">13</option>
+              <option value="16">16</option>
+            </select>
+          </div>
+          </div>
           <thead>
             <tr>
               <th>Amount</th>
