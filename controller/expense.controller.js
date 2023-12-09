@@ -1,7 +1,6 @@
 const Expense = require("../models/expense.model");
 const User = require("../models/user.model");
 const sequelize = require("../utils/database");
-const DownloadExpenses = require("../models/downloadedexpense.model");
 const S3Services = require("../services/S3services");
 
 exports.downloadExpense = async (req, res) => {
@@ -12,7 +11,7 @@ exports.downloadExpense = async (req, res) => {
     const fileName = `Expense${userId}/${new Date()}.txt`;
     const fileURL = await S3Services.uploadToS3(stringifiedExpenses, fileName);
     console.log(fileURL);
-    await req.user.createDownloadedExpense({ fileUrl:fileURL });
+    await req.user.createDownloadedExpense({ fileUrl: fileURL });
     res.status(200).json({ success: true, fileURL });
   } catch (error) {
     console.log("Error in download expense", error);
@@ -73,6 +72,34 @@ exports.postExpense = async (req, res, next) => {
     res.status(error.status || 500).json({
       message: error.message || "Something went wrong while adding expense..",
     });
+  }
+};
+
+exports.getExpensesForPagination = async (req, res) => {
+  try {
+    const pageNo = req.params.page;
+    const limit = 7;
+
+    const offset = (pageNo - 1) * limit;
+
+    const totalExpenses = await Expense.count({
+      where: { userId: req.user.id },
+    });
+
+    const totalPages = Math.ceil(totalExpenses / limit);
+
+    const expenses = await Expense.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      offset,
+      limit,
+    });
+
+    res.status(200).json({ success: true, expenses, totalPages });
+  } catch (error) {
+    console.log("Error while getting all the expenses", error);
+    res.status(500).json({ success: false, message: error });
   }
 };
 

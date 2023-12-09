@@ -50,7 +50,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
   // }
   e.preventDefault();
   axios
-    .get("http://localhost:4001/expense/getExpense", {
+    .get("http://localhost:4001/expense/getExpenses/1", {
       headers: { Authentication: token },
     })
     .then((res) => {
@@ -59,14 +59,43 @@ window.addEventListener("DOMContentLoaded", (e) => {
         showLeaderBoard();
         showReportsTab();
       }
-      res.data.expense.forEach((expense) => {
+      res.data.expenses.forEach((expense) => {
         addExpenseToList(expense);
       });
+
+      const ul = document.querySelector("#pagination-list");
+
+      for (let i = 1; i <= res.data.totalPages; i++) {
+        ul.innerHTML += `<li class="page-item">
+        <button class="page-link" onclick="pagination(${i})">${i}</button>
+      </li>`;
+      }
     })
     .catch((err) => {
       error_view.textContent = err.message;
     });
 });
+
+async function pagination(e) {
+  try {
+    const response = await axios(
+      `http://localhost:4001/expense/getExpenses/${e}`,
+      {
+        headers: {
+          Authentication: token,
+        },
+      }
+    );
+
+    Expense_list.innerHTML = "";
+
+    response.data.expenses.map((expense) => {
+      addExpenseToList(expense);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 function addExpenseToList(expense) {
   const childElement = document.createElement("tr");
