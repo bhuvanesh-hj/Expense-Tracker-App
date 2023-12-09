@@ -15,6 +15,10 @@ router.post(
   expenseController.postExpense
 );
 
+router.get("/leaderBoard", (req, res) => {
+  res.sendFile("leaderBoard.html", { root: "views" });
+});
+
 router.get(
   "/getExpense",
   authentication.authenticate,
@@ -25,6 +29,17 @@ router.delete(
   "/deleteExpense/:expenseId",
   authentication.authenticate,
   expenseController.deleteExpense
+);
+
+router.get(
+  "/download",
+  authentication.authenticate,
+  expenseController.downloadExpense
+);
+router.get(
+  "/downloaded-expenses",
+  authentication.authenticate,
+  expenseController.downloadedExpense
 );
 
 module.exports = router;

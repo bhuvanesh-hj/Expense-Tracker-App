@@ -71,10 +71,11 @@ login_form.addEventListener("submit", async (e) => {
     if (response.status === 200) {
       // alert("user successfully sign in");
       console.log(response.data.token);
-      localStorage.setItem("token",response.data.token);
+      localStorage.setItem("token", response.data.token);
       email_sign_in.value = "";
       password_sign_in.value = "";
-      window.location = 'expense', true;
+
+      (window.location = "expense"), true;
     }
   } catch (error) {
     console.log(error);

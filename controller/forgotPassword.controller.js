@@ -14,7 +14,7 @@ exports.forgotPassword = async (req, res, next) => {
     if (user) {
       const id = uuid.v4();
 
-      await ForgotPassword.create({ id, userid: user.id, isActive: true });
+      await ForgotPassword.create({ id, userId: user.id, isActive: true });
 
       const client = Sib.ApiClient.instance;
 

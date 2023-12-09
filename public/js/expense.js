@@ -4,52 +4,26 @@ const Expense_list = document.querySelector(".list");
 const list_body = document.querySelector("#list-body");
 const token = localStorage.getItem("token");
 
-
 function showPremiumMessage() {
   document.getElementById("premium-btn").style.display = "none";
-  document.querySelector(".member").innerHTML = "You are a premium member😊";
-  document.querySelector(".member").style.color = "gold";
+}
+
+function showReportsTab() {
+  const reports = document.createElement("a");
+  reports.className = "nav-link";
+  reports.style.cursor = "pointer";
+  reports.innerHTML = `Reports`;
+  reports.href = "/reports/getReports";
+  document.querySelector(".reports").appendChild(reports);
 }
 
 function showLeaderBoard() {
-  const lbBtn = document.createElement("button");
-  lbBtn.className = "btn btn-outline-dark";
-  lbBtn.innerHTML = `Show Leader Board <i class='fas fa-chess-king' style='font-size:24px;color: gold;'></i>`;
-  document.querySelector(".member").appendChild(lbBtn);
-  lbBtn.onclick = async () => {
-    try {
-      const response = await axios(
-        "http://localhost:4001/premium/leaderBoard",
-        {
-          headers: { Authentication: token },
-        }
-      );
-      console.log(response);
-      list_body.innerHTML = "";
-      list_body.innerHTML += `<div id="leader-table" ><table  class="table table-striped table-hover border">
-      <h3>Leader Board</h3>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Total Expenses</th>
-        </tr>
-      </thead>
-      <tbody class="leader-list">
-      </tbody>
-    </table> </div>`;
-
-      response.data.expensesList.map((leader) => {
-        document.querySelector(".leader-list").innerHTML += `<tr>
-        <td>${leader.username}</td>
-        <td>${leader.totalExpenses || 0}</td>
-      </tr>`;
-      });
-
-      
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const anchorTag = document.createElement("a");
+  anchorTag.className = "nav-link";
+  anchorTag.style.cursor = "pointer";
+  anchorTag.innerHTML = `Leader Board`;
+  anchorTag.href = "/expense/leaderBoard";
+  document.querySelector(".leader-Board").appendChild(anchorTag);
 }
 
 // function jwtParser(token) {
@@ -74,7 +48,7 @@ window.addEventListener("DOMContentLoaded", (e) => {
   // if (decodedJwt.isPremiumMember) {
   //   showPremiumMessage();
   // }
-e.preventDefault();
+  e.preventDefault();
   axios
     .get("http://localhost:4001/expense/getExpense", {
       headers: { Authentication: token },
@@ -83,6 +57,7 @@ e.preventDefault();
       if (res.data.user) {
         showPremiumMessage();
         showLeaderBoard();
+        showReportsTab();
       }
       res.data.expense.forEach((expense) => {
         addExpenseToList(expense);
@@ -131,8 +106,15 @@ const expenseHandler = (e) => {
   const amount = document.querySelector("#amount").value;
   const description = document.querySelector("#description").value;
   const category = document.querySelector("#category").value;
+  const newDate = new Date();
+  const date = `${newDate.getDate().toString().padStart(2, 0)}-${(
+    newDate.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, 0)}-${newDate.getFullYear()}`;
 
   const obj = {
+    date,
     amount,
     description,
     category,
@@ -183,6 +165,7 @@ document.getElementById("premium-btn").onclick = async (e) => {
       console.log(res);
       showPremiumMessage();
       showLeaderBoard();
+      showReportsTab();
       // localStorage.setItem("token", res.data.token);
       alert("you are a premium user now😊💥💥 ");
     },
@@ -210,4 +193,13 @@ document.getElementById("premium-btn").onclick = async (e) => {
     );
     alert(failedResponse.data.message);
   });
+};
+
+document.querySelector("#logout-btn").onclick = () => {
+  try {
+    localStorage.clear();
+    (window.location = "/"), true;
+  } catch (error) {
+    console.log(error);
+  }
 };

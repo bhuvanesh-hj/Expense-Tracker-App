@@ -11,6 +11,7 @@ const expenseRoutes = require("./routes/expense");
 const purchaseRoues = require("./routes/purchase");
 const premiumRoutes = require("./routes/premium");
 const forgotPasswordRoutes = require("./routes/forgotPassword");
+const reportsRoutes = require("./routes/reports");
 
 const sequelize = require("./utils/database");
 
@@ -19,6 +20,8 @@ const cors = require("cors");
 const Users = require("./models/user.model");
 const Expense = require("./models/expense.model");
 const Order = require("./models/order.model");
+const ForgotPassword = require("./models/forgotPasswordRequests.model");
+const DownloadedExpenses = require("./models/downloadedexpense.model");
 
 const app = express();
 
@@ -36,6 +39,7 @@ app.use("/expense", expenseRoutes);
 app.use("/purchase", purchaseRoues);
 app.use("/premium", premiumRoutes);
 app.use("/password", forgotPasswordRoutes);
+app.use("/reports", reportsRoutes);
 
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, `views/${req.url}`));
@@ -46,6 +50,12 @@ Expense.belongsTo(Users);
 
 Users.hasMany(Order);
 Order.belongsTo(Users);
+
+Users.hasMany(ForgotPassword);
+ForgotPassword.belongsTo(Users);
+
+Users.hasMany(DownloadedExpenses);
+DownloadedExpenses.belongsTo(Users);
 
 sequelize
   .sync({ force: false })

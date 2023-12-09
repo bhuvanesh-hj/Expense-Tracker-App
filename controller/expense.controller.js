@@ -1,17 +1,46 @@
 const Expense = require("../models/expense.model");
 const User = require("../models/user.model");
 const sequelize = require("../utils/database");
+const DownloadExpenses = require("../models/downloadedexpense.model");
+const S3Services = require("../services/S3services");
+
+exports.downloadExpense = async (req, res) => {
+  try {
+    const expenses = await req.user.getExpenses();
+    const stringifiedExpenses = JSON.stringify(expenses);
+    const userId = req.user.id;
+    const fileName = `Expense${userId}/${new Date()}.txt`;
+    const fileURL = await S3Services.uploadToS3(stringifiedExpenses, fileName);
+    console.log(fileURL);
+    await req.user.createDownloadedExpense({ fileUrl:fileURL });
+    res.status(200).json({ success: true, fileURL });
+  } catch (error) {
+    console.log("Error in download expense", error);
+    res.status(500).json({ success: false, error });
+  }
+};
+
+exports.downloadedExpense = async (req, res) => {
+  try {
+    const downloadedExpenses = await req.user.getDownloadedExpenses();
+    res.status(200).json({ success: true, downloadedExpenses });
+  } catch (error) {
+    console.log("Error in downloaded expenses ", error);
+    res.status(500).json({ success: false, error });
+  }
+};
 
 exports.postExpense = async (req, res, next) => {
   const transac = await sequelize.transaction();
 
   try {
-    const { amount, description, category } = req.body;
+    const { amount, description, category, date } = req.body;
     const userId = req.user.id;
     if (
       amount == undefined ||
       description == undefined ||
-      category == undefined
+      category == undefined ||
+      date == undefined
     ) {
       throw new Error({ status: 400, message: "Please fill the form." });
     }
@@ -21,6 +50,7 @@ exports.postExpense = async (req, res, next) => {
         amount,
         description,
         category,
+        date,
         userId,
       },
       { transaction: transac }
