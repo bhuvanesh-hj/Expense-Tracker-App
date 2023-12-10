@@ -18,5 +18,6 @@ exports.authenticate = (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(401).json({ success: false, message: error.message });
+    // res.status(404).send(`<h1>404 Not found! <a href="/">got to sig-in page</a></h1>`)
   }
 };
