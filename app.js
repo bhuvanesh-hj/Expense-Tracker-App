@@ -1,11 +1,11 @@
 const express = require("express");
+require("dotenv").config();
 
 const path = require("path");
 const helmet = require("helmet");
 const fs = require("fs");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-require("dotenv").config();
 
 const userRoutes = require("./routes/user");
 const expenseRoutes = require("./routes/expense");

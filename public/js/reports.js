@@ -31,7 +31,7 @@ document.querySelector("#daily-btn").onclick = async function getDailyReport(
     date: formattedDate,
   };
   const response = await axios.post(
-    "http://localhost:4001/reports/dailyReports",
+    "/reports/dailyReports",
     obj,
     {
       headers: { Authentication: token },
@@ -73,7 +73,7 @@ document.querySelector("#monthly-btn").onclick =
     };
 
     const response = await axios.post(
-      "http://localhost:4001/reports/monthlyReports",
+      "/reports/monthlyReports",
       obj,
       {
         headers: { Authentication: token },
@@ -106,7 +106,7 @@ async function download() {
     ).innerHTML += `<div class="spinner-border spinner-border-sm" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>`;
-    const response = await axios("http://localhost:4001/expense/download", {
+    const response = await axios("/expense/download", {
       headers: { Authentication: token },
     });
 
@@ -122,13 +122,16 @@ async function download() {
     }
   } catch (error) {
     console.log(error);
+    error.response.status == 401
+      ? ((window.location = "/"), true)
+      : alert(error.response.data.message);
   }
 }
 
 async function showDownloadedLists() {
   try {
     const Expenses = await axios(
-      "http://localhost:4001/expense/downloaded-expenses",
+      "/expense/downloaded-expenses",
       {
         headers: {
           Authentication: token,
@@ -138,7 +141,7 @@ async function showDownloadedLists() {
     const list = document.querySelector("#downloaded-list");
     list.innerHTML = "";
     list.innerHTML += `<h4 class="text-center">Downloaded Lists</h4>`;
-    console.log(Expenses);
+    // console.log(Expenses);
     if (Expenses.data.downloadedExpenses.length > 0) {
       Expenses.data.downloadedExpenses.map((expense, i) => {
         list.innerHTML += `<li class="list-group-item"><a href="${
@@ -148,7 +151,18 @@ async function showDownloadedLists() {
     } else {
       list.innerHTML += `<p class="text-center">No list found!</p>`;
     }
+    document.querySelector("#close-btn").style.display = "inline-block"
   } catch (error) {
     console.log(error);
+    error.response.status == 401
+      ? ((window.location = "/"), true)
+      : alert(error.response.data.message);
   }
 }
+
+document.querySelector("#close-btn").onclick = function close(){
+  const list = document.querySelector("#downloaded-list");
+  list.innerHTML = "";
+  document.querySelector("#close-btn").style.display = "none"
+}
+

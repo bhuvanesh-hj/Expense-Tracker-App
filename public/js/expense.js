@@ -4,7 +4,7 @@ const Expense_list = document.querySelector(".list");
 const list_body = document.querySelector("#list-body");
 const token = localStorage.getItem("token");
 var limit = JSON.parse(localStorage.getItem("limit"));
-document.querySelector("#limit").value = limit;
+document.querySelector("#limit").value = limit || 5;
 
 document.querySelector("#limit").onclick = (e) => {
   limit = document.querySelector("#limit").value;
@@ -60,7 +60,7 @@ function expenses(e) {
   // }
   e.preventDefault();
   axios
-    .get(`http://localhost:4001/expense/getExpenses?page=${1}&limit=${limit}`, {
+    .get(`/expense/getExpenses?page=${1}&limit=${limit}`, {
       headers: { Authentication: token },
     })
     .then((res) => {
@@ -84,7 +84,9 @@ function expenses(e) {
       }
     })
     .catch((err) => {
-      error_view.textContent = err.message;
+      err.response.status == 401
+        ? ((window.location = "/"), true)
+        : toast(error_view, err.message, err);
     });
 }
 
@@ -93,7 +95,7 @@ window.addEventListener("DOMContentLoaded", expenses);
 async function pagination(e) {
   try {
     const response = await axios(
-      `http://localhost:4001/expense/getExpenses?page=${e}&limit=${limit}`,
+      `/expense/getExpenses?page=${e}&limit=${limit}`,
       {
         headers: {
           Authentication: token,
@@ -107,7 +109,9 @@ async function pagination(e) {
       addExpenseToList(expense);
     });
   } catch (error) {
-    console.log(error);
+    err.response.status == 401
+        ? ((window.location = "/"), true)
+        : toast(error_view, err.message, error);
   }
 }
 
@@ -126,16 +130,35 @@ function addExpenseToList(expense) {
 function deleteExpense(id) {
   //   console.log(id);
   axios
-    .delete(`http://localhost:4001/expense/deleteExpense/${id}`, {
+    .delete(`/expense/deleteExpense/${id}`, {
       headers: { Authentication: token },
     })
     .then((res) => {
-      error_view.textContent = res.data.message;
+      toast(error_view, res.data.message);
       removeList(id);
     })
     .catch((err) => {
-      error_view.textContent = err.message;
+      err.response.status == 401
+        ? ((window.location = "/"), true)
+        : toast(error_view, err.message, err);
     });
+}
+
+function toast(error, data, err) {
+  error.innerHTML = `
+  <div id="liveToast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ${data}
+      </div>
+    </div>
+  </div>`;
+  const toastLiveExample = document.getElementById("liveToast");
+  toastLiveExample.className = err
+    ? "toast text-bg-light border border-danger border-2"
+    : "toast text-bg-light border border-success border-2";
+  const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+  toastBootstrap.show();
 }
 
 function removeList(id) {
@@ -165,16 +188,18 @@ const expenseHandler = (e) => {
   };
 
   axios
-    .post("http://localhost:4001/expense/addExpense", obj, {
+    .post("/expense/addExpense", obj, {
       headers: { Authentication: token },
     })
     .then((res) => {
-      error_view.textContent = res.data.message;
+      toast(error_view, res.data.message);
       addExpenseToList(res.data.response);
       e.target.reset();
     })
     .catch((err) => {
-      error_view.textContent = err.message;
+      err.response.status == 401
+        ? ((window.location = "/"), true)
+        : toast(error_view, err.message, err);
     });
 };
 
@@ -183,7 +208,7 @@ expense_form.addEventListener("submit", expenseHandler);
 document.getElementById("premium-btn").onclick = async (e) => {
   console.log("Premium");
   const response = await axios.get(
-    "http://localhost:4001/purchase/premiumMembership",
+    "/purchase/premiumMembership",
     {
       headers: { Authentication: token },
     }
@@ -196,7 +221,7 @@ document.getElementById("premium-btn").onclick = async (e) => {
     order_id: response.data.order.id,
     handler: async function (response) {
       const res = await axios.post(
-        "http://localhost:4001/purchase/updateTransactionStatus",
+        "/purchase/updateTransactionStatus",
         {
           order_id: options.order_id,
           payment_id: response.razorpay_payment_id,
@@ -221,7 +246,7 @@ document.getElementById("premium-btn").onclick = async (e) => {
 
   rzpy.on("payment.failed", async function (response) {
     const failedResponse = await axios.post(
-      "http://localhost:4001/purchase/updateTransactionStatus",
+      "/purchase/updateTransactionStatus",
       {
         order_id: options.order_id,
       },

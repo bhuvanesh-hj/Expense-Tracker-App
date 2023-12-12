@@ -87,12 +87,27 @@
     </header>
 
     <div class="download-reports container my-2 border rounded p-3">
-      <button class="btn btn-success" id="btn-download" onclick="download()">
-        Download report
-      </button>
-      <button class="btn btn-info" onclick="showDownloadedLists()">
-        Show Previous Downloaded List
-      </button>
+      <div id="report-container">
+        <button
+          class="btn btn-success my-1"
+          id="btn-download"
+          onclick="download()"
+        >
+          Download report
+        </button>
+        <button class="btn btn-info my-1" onclick="showDownloadedLists()">
+          Show Previous Downloaded List
+        </button>
+        <button
+          class="btn btn-danger my-1 "
+          style="display:none;"
+          id="close-btn"
+          onclick="close()"
+        >
+          Close
+        </button>
+      </div>
+
       <ul id="downloaded-list" class="list-group"></ul>
     </div>
 

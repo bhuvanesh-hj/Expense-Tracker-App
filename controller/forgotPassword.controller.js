@@ -21,6 +21,7 @@ exports.forgotPassword = async (req, res, next) => {
       const apiKey = client.authentications["api-key"];
 
       apiKey.apiKey = process.env.API_KEY;
+      // console.log(process.env.API_KEY)
 
       const sender = {
         email: "bhuvaneshhj@gmail.com",
@@ -136,7 +137,7 @@ exports.resetPassword = async (req, res, next) => {
                       password
                   }
       
-                  const response = await axios.post("http://localhost:4001/password/updatepassword/${reqId}",obj)
+                  const response = await axios.post("${process.env.WEBSITE}/password/updatepassword/${reqId}",obj)
                   window.location = "/", true;
                    alert(response.data.message)
       
@@ -171,7 +172,7 @@ exports.updatePassword = async (req, res) => {
       throw new Error("Invalid request id.");
     }
 
-    const user = await User.findOne({ where: { id: request.userid } });
+    const user = await User.findOne({ where: { id: request.userId } });
 
     if (!password) {
       throw new Error("Please fill the password it is mandatory.");

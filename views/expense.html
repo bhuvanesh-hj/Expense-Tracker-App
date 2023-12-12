@@ -34,6 +34,10 @@
     />
   </head>
   <body>
+    <!-- <button type="button" class="btn btn-primary" id="liveToastBtn">Show live toast</button> -->
+    <div class="toast-container position-fixed bottom-0 start-0 p-2" id="error-view">
+      
+    </div>
     <header>
       <nav
         class="navbar navbar-expand-lg px-2"
@@ -125,7 +129,7 @@
     </form>
   </div>
 
-    <div id="error-view"></div>
+    <!-- <div id="error-view"></div> -->
 
     <div class="container-fliud border m-4 p-3 rounded" id="list-body">
       <!-- <ul class="list"></ul> -->
@@ -135,12 +139,13 @@
             <h3>Expense List</h3>
             <div>
               <span>Rows per page:</span>
-            <select name="limit" id="limit" class="form-select my-2">
-              <option value="4">4</option>
-              <option value="7">7</option>
-              <option value="10">10</option>
-              <option value="13">13</option>
-              <option value="16">16</option>
+              <select name="limit" id="limit" class="form-select my-2">
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+                <option value="10">10</option>
+                <option value="13">13</option>
+                <option value="16">16</option>
             </select>
           </div>
           </div>
