@@ -2,7 +2,6 @@ const express = require("express");
 require("dotenv").config();
 
 const path = require("path");
-const helmet = require("helmet");
 const fs = require("fs");
 
 const bodyParser = require("body-parser");
@@ -34,7 +33,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cors());
-app.use(helmet({contentSecurityPolicy: false}));
 
 app.use(express.static("public"));
 
@@ -65,7 +63,7 @@ sequelize
   .sync({ force: false })
   .then((res) =>
     app.listen(port, () => {
-      console.log(`The server started running on the http://localhost:${port}`);
+      console.log(`The server started running on the ${process.env.WEBSITE}`);
     })
   )
   .catch((err) => console.log(err));
