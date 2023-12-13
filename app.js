@@ -4,7 +4,7 @@ require("dotenv").config();
 const path = require("path");
 const helmet = require("helmet");
 const fs = require("fs");
-const morgan = require("morgan");
+
 const bodyParser = require("body-parser");
 
 const userRoutes = require("./routes/user");
@@ -26,10 +26,6 @@ const Order = require("./models/order.model");
 const ForgotPassword = require("./models/forgotPasswordRequests.model");
 const DownloadedExpenses = require("./models/downloadedexpense.model");
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
-  { flags: "a" }
-);
 
 const app = express();
 
@@ -39,7 +35,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cors());
 app.use(helmet({contentSecurityPolicy: false}));
-app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(express.static("public"));
 
