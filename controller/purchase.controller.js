@@ -22,8 +22,7 @@ exports.purchasePremium = (req, res, next) => {
       if (err) {
         throw new Error(JSON.stringify(err));
       }
-      req.user
-        .createOrder({ orderid: order.id, status: "PENDING" })
+      Order.create({ orderId: order.id, status: "PENDING", userId: req.user })
         .then(() => {
           return res.status(201).json({ order, key_id: razorPY.key_id });
         })
@@ -41,33 +40,34 @@ exports.updateTransactionStatus = async (req, res, next) => {
   const { payment_id, order_id } = req.body;
 
   try {
-    const order = await Order.findOne({ where: { orderid: order_id } });
-
+    const order = await Order.findOne({ orderId: order_id });
+    // console.log(order);
     if (!payment_id) {
-      order.update({ status: "FAILED" }).then(() => {
-        return res
-          .status(203)
-          .json({ success: true, message: "Transaction failed!" });
-      });
+      order.status = "FAILED";
+      await order.save();
+      return res
+        .status(203)
+        .json({ success: true, message: "Transaction failed!" });
     } else {
-      const Promise1 = order.update({
-        paymentid: payment_id,
-        status: "SUCCESSFUL",
-      });
+      // const Promise1 = order.updateOne({
+      //   paymentId: payment_id,
+      //   status: "SUCCESSFUL",
+      // });
+      order.paymentId = payment_id;
+      order.status = "SUCCESSFUL";
+      req.user.isPremiumMember = true;
 
-      const Promise2 = req.user.update({ isPremiumMember: true });
+      // const Promise2 = req.user.updateOne({ isPremiumMember: true });
 
-      const userId = req.user.id;
+      const userId = req.user._id;
 
-      Promise.all([Promise1, Promise2])
+      Promise.all([order.save(), req.user.save()])
         .then(() => {
-          return res
-            .status(202)
-            .json({
-              success: true,
-              message: "Transaction successful",
-              token: generateAccessToken(userId, true),
-            });
+          return res.status(202).json({
+            success: true,
+            message: "Transaction successful",
+            token: generateAccessToken(userId, true),
+          });
         })
         .catch((err) => {
           throw new Error(err);

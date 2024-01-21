@@ -2,7 +2,6 @@ const Users = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-
 exports.usersLoginForm = (req, res, next) => {
   try {
     res.sendFile("userActions.html", { root: "views" });
@@ -25,9 +24,7 @@ exports.postLogIn = async (req, res, next) => {
       res.status(405).json({ error: "Please fill the form details" });
     }
 
-    const [existUserEmail] = await Users.findAll({
-      where: { email },
-    });
+    const [existUserEmail] = await Users.find({ email });
     // console.log(existUserEmail);
     if (existUserEmail) {
       bcrypt.compare(password, existUserEmail.password, function (err, result) {
@@ -38,7 +35,7 @@ exports.postLogIn = async (req, res, next) => {
         if (result) {
           res.status(200).json({
             message: "User sign-in successful✅",
-            token: generateAccessToken(existUserEmail.id),
+            token: generateAccessToken(existUserEmail._id),
           });
         } else {
           res.status(401).json({ error: "User not authorized!" });
@@ -58,8 +55,8 @@ exports.postSignUp = async (req, res, next) => {
     const email = req.body.email;
     const userPassword = req.body.password;
     // console.log(username,email,password);
-    const [existEmail] = await Users.findAll({
-      where: { email },
+    const [existEmail] = await Users.find({
+      email: email,
     });
     // console.log(existEmail);
     if (existEmail) {
@@ -70,11 +67,13 @@ exports.postSignUp = async (req, res, next) => {
         // Store hash in your password DB.
         if (err) throw new Error("Something went wrong!");
 
-        const response = await Users.create({
+        const user = new Users({
           username,
           email,
           password,
+          totalExpenses: 0
         });
+        await user.save();
       });
       res.status(200).json({ message: "User created" });
     }

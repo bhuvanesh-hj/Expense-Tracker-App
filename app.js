@@ -6,6 +6,8 @@ const fs = require("fs");
 
 const bodyParser = require("body-parser");
 
+const mongoose = require("mongoose");
+
 const userRoutes = require("./routes/user");
 const expenseRoutes = require("./routes/expense");
 const purchaseRoues = require("./routes/purchase");
@@ -13,18 +15,17 @@ const premiumRoutes = require("./routes/premium");
 const forgotPasswordRoutes = require("./routes/forgotPassword");
 const reportsRoutes = require("./routes/reports");
 
-const sequelize = require("./utils/database");
+// const sequelize = require("./utils/database");
 
 const cors = require("cors");
 
 const port = process.env.PORT || 3000;
 
-const Users = require("./models/user.model");
-const Expense = require("./models/expense.model");
-const Order = require("./models/order.model");
-const ForgotPassword = require("./models/forgotPasswordRequests.model");
-const DownloadedExpenses = require("./models/downloadedexpense.model");
-
+// const Users = require("./models/user.model");
+// const Expense = require("./models/expense.model");
+// const Order = require("./models/order.model");
+// const ForgotPassword = require("./models/forgotPasswordRequests.model");
+// const DownloadedExpenses = require("./models/downloadedexpense.model");
 
 const app = express();
 
@@ -47,23 +48,36 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, `views/${req.url}`));
 });
 
-Users.hasMany(Expense);
-Expense.belongsTo(Users);
+app.use((req, res, next) => {
+  res.status(404).render("404", { pageTitle: "Page Not Found", path: "/404" });
+});
 
-Users.hasMany(Order);
-Order.belongsTo(Users);
+// Users.hasMany(Expense);
+// Expense.belongsTo(Users);
 
-Users.hasMany(ForgotPassword);
-ForgotPassword.belongsTo(Users);
+// Users.hasMany(Order);
+// Order.belongsTo(Users);
 
-Users.hasMany(DownloadedExpenses);
-DownloadedExpenses.belongsTo(Users);
+// Users.hasMany(ForgotPassword);
+// ForgotPassword.belongsTo(Users);
 
-sequelize
-  .sync({ force: false })
-  .then((res) =>
+// Users.hasMany(DownloadedExpenses);
+// DownloadedExpenses.belongsTo(Users);
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then((result) => {
     app.listen(port, () => {
       console.log(`The server started running on the ${process.env.WEBSITE}`);
-    })
-  )
+    });
+  })
   .catch((err) => console.log(err));
+
+// sequelize
+//   .sync({ force: false })
+//   .then((res) =>
+//     app.listen(port, () => {
+//       console.log(`The server started running on the ${process.env.WEBSITE}`);
+//     })
+//   )
+//   .catch((err) => console.log(err));

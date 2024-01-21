@@ -1,5 +1,5 @@
 const Expenses = require("../models/expense.model");
-const { Op } = require("sequelize");
+// const { Op } = require("sequelize");
 
 exports.getReports = (req, res) => {
   try {
@@ -13,8 +13,8 @@ exports.getReports = (req, res) => {
 exports.dailyReports = async (req, res) => {
   try {
     const { date } = req.body;
-    const userId = req.user.id;
-    const response = await Expenses.findAll({ where: { date, userId } });
+    const userId = req.user._id;
+    const response = await Expenses.find({ date, userId });
 
     response.length > 0
       ? res.status(200).json({ success: true, response })
@@ -28,17 +28,14 @@ exports.dailyReports = async (req, res) => {
 exports.monthlyReports = async (req, res) => {
   try {
     const { month } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
-    const response = await Expenses.findAll({
-      where: {
-        date: {
-          [Op.like]: `%-${month}%`,
-        },
-        userId,
-      },
-      raw: true,
+    const response = await Expenses.find({
+      date: new RegExp(`-${month}`),
+      userId,
     });
+
+    // console.log(response);
 
     response.length > 0
       ? res.status(200).json({ success: true, response })

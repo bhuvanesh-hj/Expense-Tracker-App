@@ -116,13 +116,14 @@ async function pagination(e) {
 }
 
 function addExpenseToList(expense) {
+  // console.log(expense);
   // Expense_list.innerHTML = "";
   const childElement = document.createElement("tr");
   //   childElement.innerHTML = `Amount : ${expense.amount} Description : ${expense.description} Category : ${expense.category} <button>Delete</button>`;
 
-  childElement.setAttribute("id", `expense-${expense.id}`);
+  childElement.setAttribute("id", `expense-${expense._id}`);
 
-  childElement.innerHTML = `<td>${expense.amount}</td><td>${expense.description}</td><td>${expense.category}</td><td><button type="button"  onClick='deleteExpense(${expense.id})' class="btn btn-outline-danger">Delete</button></td>`;
+  childElement.innerHTML = `<td>${expense.amount}</td><td>${expense.description}</td><td>${expense.category}</td><td><button type="button"  onClick='deleteExpense("${expense._id}")' class="btn btn-outline-danger">Delete</button></td>`;
 
   Expense_list.appendChild(childElement);
 }
@@ -193,7 +194,7 @@ const expenseHandler = (e) => {
     })
     .then((res) => {
       toast(error_view, res.data.message);
-      addExpenseToList(res.data.response);
+      addExpenseToList(res.data.response[0]);
       e.target.reset();
     })
     .catch((err) => {
